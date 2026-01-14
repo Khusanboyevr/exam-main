@@ -1,50 +1,71 @@
-import { Form, ButtonToolbar, Button, Input, Textarea } from 'rsuite';
 import { useState } from 'react';
-
-const FormField = ({ name, label, accepter, ...props }) => (
-  <Form.Group controlId={name}>
-    <Form.Label>{label}</Form.Label>
-    <Form.Control name={name} accepter={accepter} {...props} />
-  </Form.Group>
-);
+import { Form, Button, Input, Textarea } from 'rsuite';
 
 function CreateProduct() {
-  const [formValue, setFormValue] = useState({
+  const [data, setData] = useState({
     title: '',
-    description: '',
+    desc: '',
     price: ''
   });
 
-  const submitHandler = () => {
-    const products = JSON.parse(localStorage.getItem('products')) || [];
+  const handleChange = value => {
+    setData(value);
+  };
 
-    products.push({
+  const handleSubmit = () => {
+    if (!data.title || !data.desc || !data.price) {
+      alert('BOSH YUBORIB BOLMAYDI  ');
+      return;
+    }
+
+    const oldProducts = JSON.parse(localStorage.getItem('products')) || [];
+
+    oldProducts.push({
       id: Date.now(),
-      title: formValue.title,
-      description: formValue.description,
-      price: formValue.price
+      title: data.title,
+      description: data.desc,
+      price: data.price
     });
 
-    localStorage.setItem('products', JSON.stringify(products));
+    localStorage.setItem('products', JSON.stringify(oldProducts));
 
-    setFormValue({
+    setData({
       title: '',
-      description: '',
+      desc: '',
       price: ''
     });
   };
 
   return (
-    <Form className='w-full p-5 ' fluid formValue={formValue} onChange={setFormValue}>
-      <FormField name="title" label="Title" accepter={Input} />
-      <FormField name="description" label="Description" accepter={Textarea} rows={4} />
-      <FormField name="price" label="Price" accepter={Input} />
+    <Form
+      fluid
+      formValue={data}
+      onChange={handleChange}
+      className="rounded-3xl bg-gray-100 p-5 w-full hover:bg-gray-200"
+    >
+      <Form.Group className="mb-4">
+        <Form.Label className="font-bold">Title</Form.Label>
+        <Form.Control name="title" accepter={Input} />
+      </Form.Group>
 
-      <ButtonToolbar>
-        <Button color="orange" appearance="primary" onClick={submitHandler}>
-         Add Product
+      <Form.Group className="mb-4">
+        <Form.Label className="font-bold">Description</Form.Label>
+        <Form.Control name="desc" accepter={Textarea} rows={4} />
+      </Form.Group>
+
+      <Form.Group className="mb-4">
+        <Form.Label className="font-bold">Price</Form.Label>
+        <Form.Control name="price" accepter={Input} />
+      </Form.Group>
+
+      <Button
+        className="mt-4 ml-auto"
+        appearance="primary"
+        color="orange"
+        onClick={handleSubmit}
+      >
+        Add product
       </Button>
-      </ButtonToolbar>
     </Form>
   );
 }
